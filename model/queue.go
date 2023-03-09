@@ -28,6 +28,7 @@ type Task struct {
 	Labels       map[string]string `meddler:"task_labels,json"`
 	Dependencies []string          `meddler:"task_dependencies,json"`
 	RunOn        []string          `meddler:"task_run_on,json"`
+	DepStatus    map[string]string `meddler:"task_dep_status,json"`
 }
 
 // TaskStore defines storage for scheduled Tasks.
@@ -49,7 +50,7 @@ func WithTaskStore(q queue.Queue, s TaskStore) queue.Queue {
 			Labels:       task.Labels,
 			Dependencies: task.Dependencies,
 			RunOn:        task.RunOn,
-			DepStatus:    make(map[string]string),
+			DepStatus:    task.DepStatus,
 		})
 	}
 	q.PushAtOnce(context.Background(), toEnqueue)
@@ -69,6 +70,7 @@ func (q *persistentQueue) Push(c context.Context, task *queue.Task) error {
 		Labels:       task.Labels,
 		Dependencies: task.Dependencies,
 		RunOn:        task.RunOn,
+		DepStatus:    task.DepStatus,
 	})
 	err := q.Queue.Push(c, task)
 	if err != nil {
@@ -86,6 +88,7 @@ func (q *persistentQueue) PushAtOnce(c context.Context, tasks []*queue.Task) err
 			Labels:       task.Labels,
 			Dependencies: task.Dependencies,
 			RunOn:        task.RunOn,
+			DepStatus:    task.DepStatus,
 		})
 	}
 	err := q.Queue.PushAtOnce(c, tasks)

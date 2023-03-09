@@ -15,6 +15,7 @@
 package datastore
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 
 	"github.com/woodpecker-ci/woodpecker/model"
@@ -28,9 +29,10 @@ func TestTaskList(t *testing.T) {
 	}()
 
 	s.TaskInsert(&model.Task{
-		ID:     "some_random_id",
-		Data:   []byte("foo"),
-		Labels: map[string]string{"foo": "bar"},
+		ID:        "some_random_id",
+		Data:      []byte("foo"),
+		Labels:    map[string]string{"foo": "bar"},
+		DepStatus: map[string]string{"test": "dep"},
 	})
 
 	list, err := s.TaskList()
@@ -38,16 +40,10 @@ func TestTaskList(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	if got, want := len(list), 1; got != want {
-		t.Errorf("Want %d task, got %d", want, got)
-		return
-	}
-	if got, want := list[0].ID, "some_random_id"; got != want {
-		t.Errorf("Want task id %s, got %s", want, got)
-	}
-	if got, want := list[0].Data, "foo"; string(got) != want {
-		t.Errorf("Want task data %s, got %s", want, string(got))
-	}
+	assert.Len(t, list, 1, "Expected one task in list")
+	assert.Equal(t, "some_random_id", list[0].ID)
+	assert.Equal(t, "foo", string(list[0].Data))
+	assert.EqualValues(t, map[string]string{"test": "dep"}, list[0].DepStatus)
 
 	err = s.TaskDelete("some_random_id")
 	if err != nil {
@@ -60,7 +56,5 @@ func TestTaskList(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	if got, want := len(list), 0; got != want {
-		t.Errorf("Want empty task list after delete")
-	}
+	assert.Len(t, list, 0, "Want empty task list after delete")
 }
