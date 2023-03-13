@@ -56,5 +56,7 @@ func TestTaskList(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	assert.Len(t, list, 0, "Want empty task list after delete")
+	if got, want := len(list), 0; got != want {
+		t.Errorf("Want empty task list after delete")
+	}
 }

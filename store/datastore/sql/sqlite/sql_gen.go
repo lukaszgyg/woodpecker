@@ -590,6 +590,7 @@ SELECT
 ,task_labels
 ,task_dependencies
 ,task_run_on
+,task_dep_status
 FROM tasks
 `
 

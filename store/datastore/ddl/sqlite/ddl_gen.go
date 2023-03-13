@@ -208,6 +208,10 @@ var migrations = []struct {
 		name: "update-table-set-users-token-and-secret-length",
 		stmt: updateTableSetUsersTokenAndSecretLength,
 	},
+	{
+		name: "alter-table-add-task-dep-status",
+		stmt: alterTableAddDepStatusColumnToTasks,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -757,4 +761,12 @@ UPDATE builds SET changed_files='[]'
 
 var updateTableSetUsersTokenAndSecretLength = `
 
+`
+
+//
+// 029_add_dep_status_column_to_tasks.sql
+//
+
+var alterTableAddDepStatusColumnToTasks = `
+ALTER TABLE tasks ADD COLUMN task_dep_status BLOB
 `
